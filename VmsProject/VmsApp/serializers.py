@@ -10,7 +10,7 @@ class  VendorSerializer(serializers.ModelSerializer):
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrder
-        exclude="__all__"
+        fields="__all__"
         
 class HistoricalOrderSerializer(serializers.ModelSerializer):    
     class Meta:
