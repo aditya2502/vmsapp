@@ -1,28 +1,24 @@
-"""
-URL configuration for VmsProject project.
+# urls.py
+from django.urls import path
+from .views import (
+    VendorListCreateAPIView,
+    VendorRetrieveUpdateDestroyAPIView,
+    PurchaseOrderListCreateAPIView,
+    PurchaseOrderRetrieveUpdateDestroyAPIView,
+    VendorPerformanceAPIView,
+    AcknowledgePurchaseOrderAPIView,
+    HistoricalPerformanceListCreateAPIView,
+    HistoricalPerformanceRetrieveUpdateDestroyAPIView
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.contrib import admin
-from django.urls import path,include
-from .views import *
+)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('vendors/', VendorListCreateView.as_view(), name='vendor-list-create'),  # Vendor list and creation
-    path('vendors/<int:pk>/', VendorRetrieveUpdateDeleteView.as_view(), name='vendor-retrieve-update-delete'),  # Vendor details, update, and delete
-    path('vendors/<int:pk>/performance/', VendorPerformanceView.as_view(), name='vendor-performance'),  # Vendor performance details
-    path('purchase_orders/', PurchaseOrderListCreateView.as_view(), name='purchase-order-list-create'),  # Purchase order list and creation
-    path('purchase_orders/<int:pk>/', PurchaseOrderRetrieveUpdateDeleteView.as_view(), name='purchase-order-retrieve-update-delete'),  # Purchase order details, update, and delete
+    path('api/vendors/', VendorListCreateAPIView.as_view(), name='vendor-list-create'),
+    path('api/vendors/<int:pk>/', VendorRetrieveUpdateDestroyAPIView.as_view(), name='vendor-retrieve-update-destroy'),
+    path('api/purchase_orders/', PurchaseOrderListCreateAPIView.as_view(), name='purchase-order-list-create'),
+    path('api/purchase_orders/<int:pk>/', PurchaseOrderRetrieveUpdateDestroyAPIView.as_view(), name='purchase-order-retrieve-update-destroy'),
+    path('api/history_orders/', HistoricalPerformanceListCreateAPIView.as_view(), name='purchase-order-list-create'),
+    path('api/history_orders/<int:pk>/', HistoricalPerformanceRetrieveUpdateDestroyAPIView.as_view(), name='purchase-order-retrieve-update-destroy'),
+    path('api/vendors/<int:pk>/performance/', VendorPerformanceAPIView.as_view(), name='vendor-performance'),
+    path('api/acknowledge/<int:pk>/acknowledge/', AcknowledgePurchaseOrderAPIView.as_view(), name='vendor-acknowledge'),
 ]

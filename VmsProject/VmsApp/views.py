@@ -1,57 +1,70 @@
-from django.shortcuts import render
+from .models import Vendor, PurchaseOrder, HistoricalPerformance
+from .serializers import VendorSerializer, PurchaseOrderSerializer, HistoricalPerformanceSerializer
 from rest_framework import generics
+from django.http import JsonResponse
 from rest_framework.response import Response
-from .models import Vendor, PurchaseOrder
-from .serializers import VendorSerializer, PurchaseOrderSerializer
-from rest_framework import status
-from rest_framework.decorators import api_view
+from VmsApp.calculations import calculate_on_time_delivery_rate, calculate_quality_rating_avg, calculate_average_response_time, \
+calculate_fulfillment_rate
+from django.utils import timezone
 
-class VendorListCreateView(generics.ListCreateAPIView):
-    # API view to list and create Vendor objects
+
+class VendorListCreateAPIView(generics.ListCreateAPIView):
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
 
-class VendorRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
-    # API view to retrieve, update, and delete Vendor objects
+class VendorRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
 
-class PurchaseOrderListCreateView(generics.ListCreateAPIView):
-    # API view to list and create PurchaseOrder objects
-     queryset = PurchaseOrder.objects.all()
-     serializer_class = PurchaseOrderSerializer
-     
-     def get_queryset(self):
-        queryset = super().get_queryset()
-        vendor = self.request.query_params.get('vendor')
-        if vendor:
-            queryset = queryset.filter(vendor_reference=vendor)
-        return queryset
-    
-class PurchaseOrderRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
-    # API view to retrieve, update, and delete PurchaseOrder objects
+class PurchaseOrderListCreateAPIView(generics.ListCreateAPIView):
     queryset = PurchaseOrder.objects.all()
     serializer_class = PurchaseOrderSerializer
-    
-class VendorPerformanceView(generics.RetrieveAPIView):
-    # API view to retrieve performance metrics for a Vendor
+
+class PurchaseOrderRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = PurchaseOrder.objects.all()
+    serializer_class = PurchaseOrderSerializer
+
+
+class HistoricalPerformanceListCreateAPIView(generics.ListCreateAPIView):
+    queryset = HistoricalPerformance.objects.all()
+    serializer_class = HistoricalPerformanceSerializer
+
+class HistoricalPerformanceRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = HistoricalPerformance.objects.all()
+    serializer_class = HistoricalPerformanceSerializer
+
+class VendorPerformanceAPIView(generics.RetrieveAPIView):
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
-    
-    from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .models import Vendor
 
-@api_view(['GET'])
-def get_vendor_performance(request, vendor_id):
-    try:
-        vendor = Vendor.objects.get(id=vendor_id)
-        performance_metrics = {
-            'on_time_delivery_rate': vendor.on_time_delivery_rate,
-            'quality_rating': vendor.quality_rating,
-            'response_time': vendor.response_time.total_seconds(),
-            'fulfilment_rate': vendor.fulfilment_rate
+    def retrieve(self, request, *args, **kwargs):
+        vendor = self.get_object()
+        on_time_delivery_rate = calculate_on_time_delivery_rate(vendor)
+        quality_rating_avg = calculate_quality_rating_avg(vendor)
+        average_response_time = calculate_average_response_time(vendor)
+        fulfillment_rate = calculate_fulfillment_rate(vendor)
+
+        data = {
+            'on_time_delivery_rate': on_time_delivery_rate,
+            'quality_rating_avg': quality_rating_avg,
+            'average_response_time': average_response_time,
+            'fulfillment_rate': fulfillment_rate,
         }
-        return Response(performance_metrics)
-    except Vendor.DoesNotExist:
-        return Response({"error": "Vendor not found"}, status=404)
+        return Response(data)
+
+class AcknowledgePurchaseOrderAPIView(generics.UpdateAPIView):
+    queryset = PurchaseOrder.objects.all()
+    serializer_class = PurchaseOrderSerializer
+
+    def update(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            instance.acknowledgment_date = timezone.now()
+            instance.save()
+            vendor = instance.vendor
+            vendor.average_response_time = calculate_average_response_time()
+            vendor.save()
+
+            return JsonResponse({'message': 'Purchase order acknowledged successfully'})
+        except PurchaseOrder.DoesNotExist:
+            return JsonResponse({'error': 'Purchase order not found'}, status=404)
