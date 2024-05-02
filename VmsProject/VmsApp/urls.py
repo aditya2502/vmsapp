@@ -22,3 +22,4 @@ urlpatterns = [
     path('api/vendors/<int:pk>/performance/', VendorPerformanceAPIView.as_view(), name='vendor-performance'),
     path('api/acknowledge/<int:pk>/acknowledge/', AcknowledgePurchaseOrderAPIView.as_view(), name='vendor-acknowledge'),
 ]
+

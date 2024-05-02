@@ -10,7 +10,6 @@ def calculate_on_time_delivery_rate(vendor):
         return 0
     return (on_time_deliveries / total_completed_pos) * 100
 
-
 # Function to calculate quality rating average
 def calculate_quality_rating_avg(vendor):
     completed_pos_with_rating = PurchaseOrder.objects.filter(vendor=vendor, status='completed', quality_rating__isnull=False)
