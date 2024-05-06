@@ -2,7 +2,7 @@ from .models import Vendor, PurchaseOrder, HistoricalPerformance
 from django.db.models import Avg, ExpressionWrapper, F, fields
 from django.utils import timezone
 
-# Function to calculate on-time delivery rate
+# Function to calculate on-time delivery rate  
 def calculate_on_time_delivery_rate(vendor):
     completed_pos = PurchaseOrder.objects.filter(vendor=vendor, status='completed')
     on_time_deliveries = completed_pos.filter(delivery_date__lte=F('delivery_date')).count()
@@ -42,8 +42,8 @@ def calculate_fulfillment_rate(vendor):
         return (successfully_fulfilled_pos / total_pos.count()) * 100
     return 0
 
+ # Create historical performance record after every 5 completed orders
 def create_historical_performance(self):
-    # Create historical performance record after every 5 completed orders
     completed_orders_count = PurchaseOrder.objects.filter(
         vendor=self.vendor,
         status='completed',
@@ -59,3 +59,8 @@ def create_historical_performance(self):
             average_response_time=self.vendor.average_response_time,
             fulfillment_rate=self.vendor.fulfillment_rate
         )
+        
+        
+        
+        
+        
