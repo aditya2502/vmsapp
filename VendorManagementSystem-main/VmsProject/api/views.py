@@ -19,31 +19,37 @@ class YourProtectedView(APIView):
         return Response({'message': 'This is a protected view.'})
 
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class VendorListCreateView(generics.ListCreateAPIView):
     # API view to list and create Vendor objects
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class VendorRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     # API view to retrieve, update, and delete Vendor objects
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class PurchaseOrderListCreateView(generics.ListCreateAPIView):
     # API view to list and create PurchaseOrder objects
     serializer_class = PurchaseOrderSerializer
-
     def get_queryset(self):
         queryset = PurchaseOrder.objects.all()
-
         # Check if vendor_id is provided in the query parameters
-        vendor_id = self.request.query_params.get('vendor_id', None)
+        vendor_id = self.request.query_params.get('vendor', None)
         if vendor_id:
             # Filter by vendor_id if it's provided
             queryset = queryset.filter(vendor__id=vendor_id)
 
         return queryset
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class PurchaseOrderRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     # API view to retrieve, update, and delete PurchaseOrder objects
     queryset = PurchaseOrder.objects.all()
@@ -51,12 +57,13 @@ class PurchaseOrderRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIVie
 
 
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 # special api view
 class VendorPerformanceView(generics.RetrieveAPIView):
     # API view to retrieve performance metrics for a Vendor
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
-
     def retrieve(self, request, *args, **kwargs):
         # Retrieve performance metrics for a specific Vendor
         instance = self.get_object()
@@ -68,13 +75,15 @@ class VendorPerformanceView(generics.RetrieveAPIView):
         }
         return Response(performance_data)
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 # extra api
 class AcknowledgePurchaseOrderView(generics.UpdateAPIView):
     # API view to acknowledge a PurchaseOrder and trigger recalculation
     queryset = PurchaseOrder.objects.all()
     serializer_class = PurchaseOrderSerializer
 
-    def update(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         instance = self.get_object()
 
         # Update acknowledgment_date

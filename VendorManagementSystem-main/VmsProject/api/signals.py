@@ -7,10 +7,8 @@ from .models import PurchaseOrder
 def purchase_order_saved(sender, instance, created, **kwargs):
     # Logic to execute when a PurchaseOrder is saved
     # This could include triggering calculations or updates
-
     if instance.status == 'completed':    # Check if the purchase order status is 'completed'
         
-        # Calculate and update metrics
         instance.calculate_on_time_delivery_rate()
         instance.calculate_quality_rating_avg()
         instance.calculate_fulfillment_rate()
