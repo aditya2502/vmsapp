@@ -1,9 +1,13 @@
 # Vendor Management System
 
 ## Overview
-Develop a Vendor Management Systemusing Django and Django REST Framework. This
-system will handle vendor profiles, track purchase orders, and calculate vendor performance
-metrics.
+This is a Vendor Management System (VMS) that allows vendors to manage their associated products and to track their related Purchase orders It also provides matrics which gives insightful analysis of their Purchase Orders :-
+
+Metrics:
+1. On-Time Delivery Rate: Percentage of orders delivered by the promised date.
+2. Quality Rating: Average of quality ratings given to a vendorfs purchase orders.
+3. Response Time: Average time taken by a vendor to acknowledge or respond to purchase orders .
+4. Fulfilment Rate: Percentage of purchase orders fulfilled without issues.
 
 ```Admin Username: admin```
 ```Admin Password: admin```
@@ -71,3 +75,4 @@ metrics.
     - PATCH ```/api/purchase_orders/{po_id}/```: Update a purchase order.
     - DELETE ```/api/purchase_orders/{po_id}/```: Delete a purchase order.
     - GET ```/api/purchase_orders/{po_id}/acknowledge/```: for vendors to acknowledge
+
