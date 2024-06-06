@@ -3,14 +3,14 @@
 ## Overview
 This is a Vendor Management System (VMS) that allows vendors to manage their associated products and to track their related Purchase orders It also provides matrics which gives insightful analysis of their Purchase Orders :-
 
-Metrics:
+ Vendor Metrics:
 1. On-Time Delivery Rate: Percentage of orders delivered by the promised date.
 2. Quality Rating: Average of quality ratings given to a vendorfs purchase orders.
 3. Response Time: Average time taken by a vendor to acknowledge or respond to purchase orders .
 4. Fulfilment Rate: Percentage of purchase orders fulfilled without issues.
 
 ```Admin Username: admin```
-```Admin Password: admin```
+```Admin Password: admin```  
 
 ## Table of Contents
 
